@@ -12,7 +12,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 import ApiResponse from 'src/utils/ApiResponse';
 import { RegisterDTO } from './dto/create-user.dto';
 import { AdminGuard } from './guards/admin.guard';
@@ -35,7 +35,7 @@ export class UserController {
   @Put('update')
   @UseGuards(AuthGuard)
   async update() {}
-
+  
   @Get('all')
   async all() {
     const users = await this.userService.getAllUsers();

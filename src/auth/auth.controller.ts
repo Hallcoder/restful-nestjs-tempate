@@ -1,15 +1,30 @@
-import { Body, Controller, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { LoginDTO } from './dto/login.dto';
 import { InitiateResetPasswordDTO } from './dto/initiate-reset-password.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
+import { AuthGuard } from './auth.guard';
+import { UserService } from 'src/user/user.service';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+  ) {}
 
   @Post('login')
   async login(@Body() dto: LoginDTO, @Res() res: Response) {
@@ -17,7 +32,15 @@ export class AuthController {
     const result = await this.authService.login(dto);
     return res.status(result.status).json(result.response);
   }
-
+  @Get('currentUser/:token')
+  @UseGuards(AuthGuard)
+  async getCurrentUser(@Param('token') token: string, @Req() req: Request) {
+    const user = await this.userService.getUserById(req['user'].id);
+    if (!user) {
+      return { data: null, message: 'No user found!', success: false };
+    }
+    return { data: user, message: 'User found', success: true };
+  }
   // @Post('AdminLogin')
   // async adminLogin(@Body() dto: LoginDTO, @Res() res: Response) {
   //   console.log(dto);
@@ -25,23 +48,27 @@ export class AuthController {
   //   return res.status(result.status).json(result.response);
   // }
 
-  // @Post('initiate-reset-password')
-  // async initiateResetPassword(@Body() dto: InitiateResetPasswordDTO) {
-  //   await this.authService.initiateResetPassword(dto.email);
+  @Post('initiate-reset-password')
+  async initiateResetPassword(
+    @Body() dto: InitiateResetPasswordDTO,
+    @Res() res: Response,
+  ) {
+    const data = await this.authService.initiateResetPassword(dto.email);
+    return res.status(200).json({ message: 'success', data });
+  }
 
-  //   return { message: 'Password reset initiated successfully' };
-  // }
-  // @Put('reset-password/:token')
-  // async resetPassword(
-  //   @Body() dto: ResetPasswordDTO,
-  //   @Param('token') token: string,
-  // ) {
-  //   try {
-  //     await this.authService.resetPassword(token, dto.newPassword);
-  //   } catch (error) {
-  //     console.log('Error resetting password:', error);
-  //   }
-  // }
+  @Put('reset-password/:token')
+  async resetPassword(
+    @Body() dto: ResetPasswordDTO,
+    @Param('token') token: string,
+  ) {
+    try {
+      await this.authService.resetPassword(token, dto.newPassword);
+    } catch (error) {
+      console.log('Error resetting password:', error);
+      return { message: error.message };
+    }
+  }
 
   // @Post('initiate-email-verification')
   // async initiateEmailVerification(@Body('email') email: string) {

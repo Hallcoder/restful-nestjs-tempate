@@ -86,52 +86,52 @@ export class UserService {
     }
   }
 
-  // async updateResetToken(userId: string, resetToken: string): Promise<void> {
-  //   try {
-  //     const updatedUser = await this.prisma.user.updateMany({
-  //       where: { id: userId },
-  //       data: { resetToken },
-  //     });
-  //     console.log(updatedUser);
-  //   } catch (error) {
-  //     console.log('Error updating reset token:', error);
-  //     throw error;
-  //   }
-  // }
+  async updateResetToken(userId: number, resetToken: string): Promise<void> {
+    try {
+      const updatedUser = await this.prisma.user.updateMany({
+        where: { id: userId },
+        data: { resetToken },
+      });
+      console.log(updatedUser);
+    } catch (error) {
+      console.log('Error updating reset token:', error);
+      throw error;
+    }
+  }
 
-  // async getUserByResetToken(resetToken: string) {
-  //   try {
-  //     const user = await this.prisma.user.findFirst({
-  //       where: {
-  //         resetToken,
-  //       },
-  //     });
-  //     return user;
-  //   } catch (error) {
-  //     console.log('Error getting user by reset token:', error);
-  //     throw error;
-  //   }
-  // }
+  async getUserByResetToken(resetToken: string) {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          resetToken,
+        },
+      });
+      return user;
+    } catch (error) {
+      console.log('Error getting user by reset token:', error);
+      throw error;
+    }
+  }
 
-  // async updatePasswordAndClearToken(
-  //   userId: string,
-  //   newPassword: string,
-  // ): Promise<void> {
-  //   try {
-  //     const hashedPassword = await hash(newPassword, 10);
+  async updatePasswordAndClearToken(
+    userId: number,
+    newPassword: string,
+  ): Promise<void> {
+    try {
+      const hashedPassword = await hash(newPassword, 10);
 
-  //     await this.prisma.users.update({
-  //       where: { id: userId },
-  //       data: {
-  //         password: hashedPassword,
-  //         resetToken: null, // Clear the reset token
-  //       },
-  //     });
-  //   } catch (error) {
-  //     console.log('Error updating password and clearing token:', error);
-  //     throw error;
-  //   }
-  // }
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          password: hashedPassword,
+          resetToken: null, // Clear the reset token
+        },
+      });
+    } catch (error) {
+      console.log('Error updating password and clearing token:', error);
+      throw error;
+    }
+  }
 
   // async verifyEmail(userId: string): Promise<boolean> {
   //   try {

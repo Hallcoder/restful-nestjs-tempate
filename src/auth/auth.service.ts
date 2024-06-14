@@ -3,6 +3,8 @@ import { UserService } from 'src/user/user.service';
 import { LoginDTO } from './dto/login.dto';
 import { compareSync, hashSync } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from 'src/mail/mail.service';
+import { randomBytes } from 'crypto';
 
 
 @Injectable()
@@ -10,6 +12,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private mailService: MailService
   ) {}
   async login(dto: LoginDTO) {
     const user = await this.userService.getUserByEmail(dto.email);
@@ -72,34 +75,38 @@ export class AuthService {
   //   }
   // }
 
-  // async initiateResetPassword(email: string) {
-  //   const user = await this.userService.getUserByEmail(email);
+  async initiateResetPassword(email: string) {
+    const user = await this.userService.getUserByEmail(email);
+     
+    if (!user) {
+      return;
+    }
 
-  //   if (!user) {
-  //     return;
-  //   }
+    const resetToken = randomBytes(32).toString('hex');
 
-  //   const resetToken = randomBytes(32).toString('hex');
+    await this.userService.updateResetToken(user.id, resetToken);
 
-  //   await this.userService.updateResetToken(user.id, resetToken);
+    this.mailService.sendInitiatePasswordResetEmail({
+      email: user.email,
+      token: resetToken,
+      names: `${user.name}`,
+    }).then(d => {
+      console.log(d);
+      });
+    return resetToken;  
+  }
 
-  //   await this.mailService.sendResetPasswordEmail({
-  //     email: user.email,
-  //     token: resetToken,
-  //     names: `${user.first_name} ${user.last_name}`,
-  //   });
-  // }
-  // async resetPassword(token: string, newPassword: string) {
-  //   const user = await this.userService.getUserByResetToken(token);
 
-  //   if (!user) {
-  //     return;
-  //   }
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.userService.getUserByResetToken(token);
 
-  //   const hashedPassword = hashSync(newPassword, 10);
+    if (!user) {
+      return;
+    }
 
-  //   await this.userService.updatePasswordAndClearToken(user.id, hashedPassword);
-  // }
+
+    await this.userService.updatePasswordAndClearToken(user.id, newPassword);
+  }
 
   // async initiateEmailVerification(email: string) {
   //   const user = await this.userService.getUserByEmail(email);
