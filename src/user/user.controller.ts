@@ -15,10 +15,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import ApiResponse from 'src/utils/ApiResponse';
 import { RegisterDTO } from './dto/create-user.dto';
-import { AdminGuard } from './guards/admin.guard';
 import { UserService } from './user.service';
-import { log } from 'console';
-import { request } from 'express';
+
 
 @Controller('user')
 @ApiTags('users')
