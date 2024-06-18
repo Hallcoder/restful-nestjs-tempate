@@ -22,7 +22,8 @@ export class UserService {
       const user = await this.prisma.user.create({
         data: {
           // role:dto.role,
-          name:dto.name,
+          firstName:dto.firstName,
+          lastName:dto.lastName,
           email: dto.email,
           password: hashedPassword,
         },
@@ -133,27 +134,4 @@ export class UserService {
     }
   }
 
-  // async verifyEmail(userId: string): Promise<boolean> {
-  //   try {
-  //     const user = await this.prisma.user.update({
-  //       where: { id: userId },
-  //       data: {
-  //         verification: {
-  //           update: {
-  //             verification_status: 'VERIFIED',
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     if (user) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     console.log('Error verifying email:', error);
-  //     throw error;
-  //   }
-  // }
 }

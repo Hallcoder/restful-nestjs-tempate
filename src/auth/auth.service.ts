@@ -3,7 +3,6 @@ import { UserService } from 'src/user/user.service';
 import { LoginDTO } from './dto/login.dto';
 import { compareSync, hashSync } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { MailService } from 'src/mail/mail.service';
 import { randomBytes } from 'crypto';
 
 
@@ -12,7 +11,6 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private mailService: MailService
   ) {}
   async login(dto: LoginDTO) {
     const user = await this.userService.getUserByEmail(dto.email);
@@ -85,14 +83,6 @@ export class AuthService {
     const resetToken = randomBytes(32).toString('hex');
 
     await this.userService.updateResetToken(user.id, resetToken);
-
-    this.mailService.sendInitiatePasswordResetEmail({
-      email: user.email,
-      token: resetToken,
-      names: `${user.name}`,
-    }).then(d => {
-      console.log(d);
-      });
     return resetToken;  
   }
 

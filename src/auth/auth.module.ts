@@ -4,7 +4,6 @@ import config from 'src/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
-import { MailModule } from 'src/mail/mail.module';
 import { AuthGuard } from './auth.guard';
 
 @Module({
@@ -13,8 +12,7 @@ import { AuthGuard } from './auth.guard';
       global: true,
       secret: config().jwt.secret,
       signOptions: { expiresIn: config().jwt.expiresIn },
-    }),
-    MailModule
+    })
   ],
   providers: [AuthService, UserService,AuthGuard],
   controllers: [AuthController],

@@ -10,18 +10,18 @@ import {
 } from 'class-validator';
 
 export class RegisterDTO {
-  // @IsString()
-  // @MaxLength(20)
-  // @MinLength(3)
-  // @IsNotEmpty()
-  // @ApiProperty()
-  // firstName: string;
+  @IsString()
+  @MaxLength(20)
+  @MinLength(3)
+  @IsNotEmpty()
+  @ApiProperty()
+  firstName: string;
 
   @IsString()
   @MaxLength(20)
   @MinLength(3)
   @ApiProperty()
-  name: string;
+  lastName: string;
     
   @IsEmail()
   @ApiProperty()

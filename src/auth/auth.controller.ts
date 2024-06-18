@@ -32,9 +32,10 @@ export class AuthController {
     const result = await this.authService.login(dto);
     return res.status(result.status).json(result.response);
   }
-  @Get('currentUser/:token')
+  @Get('currentUser')
   @UseGuards(AuthGuard)
-  async getCurrentUser(@Param('token') token: string, @Req() req: Request) {
+  async getCurrentUser(@Req() req: Request) {
+    console.log(req["user"]);
     const user = await this.userService.getUserById(req['user'].id);
     if (!user) {
       return { data: null, message: 'No user found!', success: false };
